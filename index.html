@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#2e3a6e">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'">
+  <title>Toplim — Catálogo Virtual</title>
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <noscript>
+    <p class="noscript">Ative o JavaScript no navegador para usar o catálogo Toplim.</p>
+  </noscript>
+
+
+  <!-- ======================================================================
+       ACESSO: entrar · criar conta · recuperar senha
+       ====================================================================== -->
+  <div id="auth" class="auth" hidden>
+    <button type="button" id="auth-tema" class="auth-tema" title="Tema" aria-label="Alternar tema">◐</button>
+
+    <div class="auth-wrap">
+      <img class="auth-logo" src="assets/logo-toplim.png" alt="Toplim" width="163" height="52">
+
+      <section class="auth-card" aria-labelledby="auth-titulo">
+
+        <!-- Abas Entrar / Criar conta -->
+        <div class="seg" id="auth-abas">
+          <button type="button" data-ir="entrar" aria-pressed="true">Entrar</button>
+          <button type="button" data-ir="criar" aria-pressed="false">Criar conta</button>
+        </div>
+
+        <h1 id="auth-titulo"></h1>
+        <p id="auth-sub" class="auth-sub"></p>
+        <div id="auth-msg" class="msg" role="alert" hidden></div>
+
+        <!-- ENTRAR -->
+        <form id="f-entrar" novalidate>
+          <div class="campo">
+            <label for="e-email">E-mail</label>
+            <input id="e-email" type="email" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" required>
+          </div>
+          <div class="campo">
+            <label for="e-senha">Senha</label>
+            <div class="campo-senha">
+              <input id="e-senha" type="password" autocomplete="current-password" required>
+              <button type="button" class="ver" data-ver="e-senha" aria-pressed="false">Mostrar</button>
+            </div>
+          </div>
+          <label class="check"><input id="e-lembrar" type="checkbox" checked> Manter conectado neste aparelho</label>
+          <button type="submit" class="p">Entrar</button>
+          <div class="auth-links">
+            <button type="button" class="link" data-ir="recuperar">Esqueci minha senha</button>
+            <button type="button" class="link" data-ir="criar">Criar conta</button>
+          </div>
+        </form>
+
+        <!-- CRIAR CONTA -->
+        <form id="f-criar" novalidate hidden>
+          <div class="campo">
+            <label for="c-nome">Nome</label>
+            <input id="c-nome" type="text" autocomplete="name" maxlength="60" required>
+          </div>
+          <div class="campo">
+            <label for="c-email">E-mail</label>
+            <input id="c-email" type="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" required>
+          </div>
+          <div class="campo">
+            <label for="c-senha">Senha</label>
+            <div class="campo-senha">
+              <input id="c-senha" type="password" autocomplete="new-password" aria-describedby="c-dica" required>
+              <button type="button" class="ver" data-ver="c-senha" aria-pressed="false">Mostrar</button>
+            </div>
+            <div class="forca" data-n="0" data-forca="c-senha" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+            <small id="c-dica" class="dica">Mínimo de 8 caracteres, com letras e números.</small>
+          </div>
+          <div class="campo">
+            <label for="c-conf">Confirmar senha</label>
+            <input id="c-conf" type="password" autocomplete="new-password" required>
+          </div>
+          <button type="submit" class="p">Criar conta</button>
+          <div class="auth-links">
+            <button type="button" class="link" data-ir="entrar">Já tenho conta</button>
+          </div>
+        </form>
+
+        <!-- ESQUECI MINHA SENHA -->
+        <form id="f-recuperar" novalidate hidden>
+          <div class="campo">
+            <label for="r-email">E-mail da conta</label>
+            <input id="r-email" type="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" required>
+          </div>
+          <div class="campo">
+            <label for="r-codigo">Código de recuperação</label>
+            <input id="r-codigo" type="text" class="mono" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="19" required>
+          </div>
+          <div class="campo">
+            <label for="r-senha">Nova senha</label>
+            <div class="campo-senha">
+              <input id="r-senha" type="password" autocomplete="new-password" required>
+              <button type="button" class="ver" data-ver="r-senha" aria-pressed="false">Mostrar</button>
+            </div>
+            <div class="forca" data-n="0" data-forca="r-senha" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div class="campo">
+            <label for="r-conf">Confirmar nova senha</label>
+            <input id="r-conf" type="password" autocomplete="new-password" required>
+          </div>
+          <button type="submit" class="p">Redefinir senha</button>
+          <div class="auth-links">
+            <button type="button" class="link" data-ir="entrar">← Voltar para o login</button>
+          </div>
+          <details class="ajuda">
+            <summary>Perdi meu código</summary>
+            <p>Peça a um administrador para gerar um novo código em <strong>Administrador → Usuários</strong>.</p>
+          </details>
+        </form>
+
+        <!-- CÓDIGO DE RECUPERAÇÃO (exibido uma única vez) -->
+        <div id="v-codigo" hidden>
+          <div class="codigo" id="cod-valor" aria-live="polite"></div>
+          <div class="row cod-acoes">
+            <button type="button" id="cod-copiar">Copiar</button>
+            <button type="button" id="cod-baixar">Baixar .txt</button>
+          </div>
+          <label class="check"><input id="cod-ok" type="checkbox"> Guardei meu código em local seguro</label>
+          <button type="button" id="cod-ir" class="p" disabled>Continuar</button>
+        </div>
+
+      </section>
+
+      <div class="auth-rodape">
+        <span>Toplim — Catálogo Virtual © Todos os direitos reservados.</span>
+        <div class="footer-partner">
+          <span>Desenvolvimento &amp; Marketing:</span>
+          <img src="assets/logo-ho-marketing-icon.png" alt="HO Marketing Digital" width="56" height="24">
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ======================================================================
+       CATÁLOGO (só aparece depois do login)
+       ====================================================================== -->
+  <div id="app" hidden>
+
+    <!-- CABEÇALHO -->
+    <header>
+      <a href="#" class="brand-logo" title="Toplim Catálogo">
+        <img src="assets/logo-toplim.png" alt="Toplim" width="119" height="38">
+      </a>
+      <div class="grow">
+        <input id="q" type="search" placeholder="Buscar por nome, código ou marca…" aria-label="Buscar">
+      </div>
+      <select id="cs" aria-label="Catálogo"></select>
+      <button id="pdf" title="Baixar catálogo em PDF" aria-label="Baixar PDF">PDF</button>
+      <button id="th" title="Tema" aria-label="Alternar tema">◐</button>
+      <button id="conta" class="avatar" title="Minha conta" aria-label="Minha conta"><span id="conta-ini" aria-hidden="true"></span></button>
+      <button id="ad" class="p" hidden><span class="rot-longo">Administrador</span><span class="rot-curto">Admin</span></button>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main>
+      <div class="chips" id="chips"></div>
+
+      <div class="bar">
+        <select id="sub" aria-label="Subcategoria"></select>
+        <select id="so" aria-label="Ordenar">
+          <option value="n">Ordem: nome A–Z</option>
+          <option value="c">Ordem: código</option>
+          <option value="m">Ordem: marca</option>
+        </select>
+        <select id="vw" aria-label="Visualização">
+          <option value="g">Visual em grade</option>
+          <option value="l">Visual em lista</option>
+        </select>
+      </div>
+
+      <div class="cnt" id="cnt"></div>
+      <div id="out"></div>
+
+      <div class="more">
+        <button id="mo" class="s" hidden>Mostrar mais</button>
+      </div>
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer>
+      <div class="footer-content">
+        <span>Toplim — Catálogo Virtual © Todos os direitos reservados.</span>
+        <div class="footer-partner">
+          <span>Desenvolvimento &amp; Marketing:</span>
+          <img src="assets/logo-ho-marketing-icon.png" alt="HO Marketing Digital" width="56" height="24">
+        </div>
+      </div>
+    </footer>
+
+    <!-- PAINÉIS (administração e conta) -->
+    <div id="adm" class="sheet" hidden></div>
+    <div id="cta" class="sheet" hidden></div>
+  </div>
+
+
+  <!-- Acesso é carregado sempre; o catálogo (data.js, app.js, conta.js) só após o login -->
+  <script src="js/auth.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>
